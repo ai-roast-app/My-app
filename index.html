@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Roast & Flex My Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0b10;
+      --card: #13151f;
+      --accent: #00ff88;
+      --pink: #ff2a85;
+      --yellow: #ffcc00;
+      --text: #f0f2f8;
+      --muted: #8c93a8;
+      --border: #232738;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header { text-align: center; margin-bottom: 1.5rem; max-width: 500px; }
+    
+    .badge {
+      background: rgba(0,255,136,0.1);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      margin: 0.5rem 0;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 1rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+
+    label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 0.4rem; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
+
+    select, input {
+      width: 100%;
+      background: #090a0f;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .mode-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      background: #090a0f;
+      padding: 0.3rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 0.6rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .mode-btn.active.roast { background: var(--pink); color: #fff; }
+    .mode-btn.active.flex { background: var(--accent); color: #000; }
+
+    .btn-main {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), #00f0ff);
+      color: #000;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .output { display: none; flex-direction: column; gap: 1rem; }
+
+    .result {
+      background: #181b29;
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+
+    .result-text { font-size: 1rem; line-height: 1.5; margin: 1rem 0; white-space: pre-line; }
+
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center; }
+    .metric-item { background: #0d0e15; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); }
+    .metric-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; color: var(--yellow); font-weight: 700; }
+    .metric-lbl { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
+
+    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .btn-sub {
+      background: #1c2030;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .tip-jar {
+      background: rgba(255, 204, 0, 0.08);
+      border: 1px dashed var(--yellow);
+      padding: 0.8rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .tip-link {
+      display: inline-block;
+      background: var(--yellow);
+      color: #000;
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    canvas { display: none; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="badge">🔥 Live AI Profile Analyzer</span>
+    <h1>Roast or Flex Profile</h1>
+    <p style="color:var(--muted); font-size:0.85rem;">Select your platform & get instantly roasted or hyped up.</p>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <label>Mode</label>
+      <div class="mode-box">
+        <button class="mode-btn active roast" id="btnRoast" onclick="setMode('roast')">🔥 Brutal Roast</button>
+        <button class="mode-btn flex" id="btnFlex" onclick="setMode('flex')">⚡ Extreme Flex</button>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Platform</label>
+          <select id="platform">
+            <option value="Spotify">🎵 Spotify</option>
+            <option value="GitHub">💻 GitHub</option>
+            <option value="X/Twitter">🐦 X / Twitter</option>
+            <option value="LinkedIn">💼 LinkedIn</option>
+            <option value="Instagram">📸 Instagram</option>
+          </select>
+        </div>
+        <div>
+          <label>Persona</label>
+          <select id="persona">
+            <option value="brainrot">🤪 Gen-Z Brainrot</option>
+            <option value="techbro">🕶️ Tech Bro</option>
+            <option value="ramsay">👨‍🍳 Gordon Ramsay</option>
+            <option value="hype">🙌 Wholesome Hype</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label>Handle or Bio</label>
+        <input type="text" id="userInput" placeholder="e.g. @username or 'Listens to 90s Country'">
+      </div>
+
+      <button class="btn-main" onclick="runApp()">ANALYZE PROFILE 🚀</button>
+    </div>
+
+    <div class="output" id="output">
+      <div class="result">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong id="resTitle" style="color:var(--accent);">ROAST READY</strong>
+          <span id="resPlatform" style="font-size:0.75rem; color:var(--muted);">SPOTIFY</span>
+        </div>
+        <div class="result-text" id="resText">...</div>
+        <div class="metrics">
+          <div class="metric-item"><div class="metric-val" id="m1">98%</div><div class="metric-lbl">Toxicity</div></div>
+          <div class="metric-item"><div class="metric-val" id="m2">2/10</div><div class="metric-lbl">Clout</div></div>
+          <div class="metric-item"><div class="metric-val" id="m3">MAX</div><div class="metric-lbl">Cringe</div></div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-sub" onclick="downloadImage()">📸 Save Image</button>
+        <button class="btn-sub" onclick="copyLink()">🔗 Share Link</button>
+      </div>
+
+      <div class="tip-jar">
+        <p style="font-size:0.8rem; font-weight:700;">Like your roast?</p>
+        <a href="https://buymeacoffee.com" target="_blank" class="tip-link">☕ Tip $2 to support</a>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="canvas" width="800" height="500"></canvas>
+
+  <script>
+    let mode = 'roast';
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('btnRoast').className = 'mode-btn ' + (m === 'roast' ? 'active roast' : '');
+      document.getElementById('btnFlex').className = 'mode-btn ' + (m === 'flex' ? 'active flex' : '');
+    }
+
+    const database = {
+      roast: {
+        brainrot: "Bro really thought this profile had aura 💀. Zero motion, lowkey cooked. Skibidi level L take.",
+        techbro: "This profile has worse scaling than an unindexed SQL database. Zero VC energy.",
+        ramsay: "WHAT IS THIS?! It's raw! It's dreadful! A primary school child could build a better profile!",
+        hype: "You are trying so hard! Keep that energy up king, even if nobody is watching!"
+      },
+      flex: {
+        brainrot: "W RIZZ DETECTED 🚨! Absolute Gigachad energy. Living rent-free in everyone's head!",
+        techbro: "Future Unicorn Founder right here. 10x Developer aura radiating from every line.",
+        ramsay: "FINALLY! Some good profile design! Perfection on a plate!",
+        hype: "ABSOLUTELY CRUSHING IT! The world is not ready for this level of greatness!"
+      }
+    };
+
+    function runApp() {
+      const p = document.getElementById('platform').value;
+      const persona = document.getElementById('persona').value;
+      const val = document.getElementById('userInput').value || '@anonymous';
+
+      document.getElementById('output').style.display = 'flex';
+      document.getElementById('resTitle').innerText = mode.toUpperCase() + ' // ' + persona.toUpperCase();
+      document.getElementById('resPlatform').innerText = p;
+
+      const txt = database[mode][persona] || "Interesting profile...";
+      document.getElementById('resText').innerText = `"${val}":\n\n` + txt;
+
+      document.getElementById('m1').innerText = mode === 'roast' ? (Math.floor(Math.random() * 20) + 80) + '%' : '0%';
+      document.getElementById('m2').innerText = mode === 'roast' ? '2/10' : '10/10';
+      document.getElementById('m3').innerText = mode === 'roast' ? 'MAX' : 'NONE';
+
+      document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+
+    function downloadImage() {
+      const cvs = document.getElementById('canvas');
+      const ctx = cvs.getContext('2d');
+
+      ctx.fillStyle = '#13151f';
+      ctx.fillRect(0, 0, 800, 500);
+
+      ctx.fillStyle = mode === 'roast' ? '#ff2a85' : '#00ff88';
+      ctx.font = 'bold 30px sans-serif';
+      ctx.fillText(document.getElementById('resTitle').innerText, 40, 60);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '22px sans-serif';
+      ctx.fillText(document.getElementById('resText').innerText.substring(0, 55) + '...', 40, 180);
+
+      const a = document.createElement('a');
+      a.download = 'profile-analysis.png';
+      a.href = cvs.toDataURL();
+      a.click();
+    }
+  </script>
+</body>
+</html>
